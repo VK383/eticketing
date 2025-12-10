@@ -1,0 +1,26 @@
+{
+  "name": "eticketing",
+  "version": "1.0.0",
+  "description": "A ticket booking system using Supabase.",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "build": "tsc",
+    "deploy": "supabase functions deploy book-ticket"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.0.0",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.4",
+    "ts-node": "^10.4.0"
+  },
+  "keywords": [
+    "ticketing",
+    "supabase",
+    "booking"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}

@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Zero Cost Event Ticketing System
 
-## Getting Started
+## 1. Setup Database (Supabase)
+1. Go to [Supabase](https://supabase.com) and create a free project.
+2. Go to the **SQL Editor** in Supabase.
+3. Copy the content of `schema.sql` (in this folder) and run it.
+4. Go to **Project Settings > API**.
+5. Copy the `Project URL` and `anon public` key.
 
-First, run the development server:
+## 2. Configure Environment
+1. Rename `.env.local.example` to `.env.local`.
+2. Paste your Supabase URL and Key in the file.
 
+## 3. Run Locally
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
+Open [http://localhost:3000](http://localhost:3000).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 4. Deploy (Free)
+1. Push this code to GitHub.
+2. Go to [Vercel](https://vercel.com) and import the repo.
+3. Add the same Environment Variables in Vercel.
+4. Deploy!
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Features
+- **Public**: Booking Page, Ticket Generation (Image Download).
+- **Admin**: Dashboard (`/admin`), QR Scanner (`/admin/scan`).
+  - **Password**: `admin123` (Change this in `app/admin/page.tsx`).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Note
+Whatsapp integration is NOT included as it is not free for bulk messaging. The system uses instant image download instead.
