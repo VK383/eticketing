@@ -8,10 +8,21 @@ import { Card, CardContent, CardTitle, CardHeader } from "@/components/ui/card";
 import { AlertCircle, CheckCircle, User, XCircle } from "lucide-react";
 import { Loader2 } from "lucide-react";
 
+interface Ticket {
+    id: string;
+    user_name: string;
+    user_phone: string;
+    user_email: string | null;
+    event_date: string;
+    status: string;
+    ticket_code: string;
+    created_at: string;
+}
+
 export function QRScanner() {
     const [scanResult, setScanResult] = useState<string | null>(null);
     const [verificationStatus, setVerificationStatus] = useState<"IDLE" | "VERIFYING" | "VALID" | "USED" | "INVALID">("IDLE");
-    const [ticketDetails, setTicketDetails] = useState<any>(null);
+    const [ticketDetails, setTicketDetails] = useState<Ticket | null>(null);
     const scannerRef = useRef<Html5QrcodeScanner | null>(null);
 
     useEffect(() => {
@@ -32,6 +43,7 @@ export function QRScanner() {
                 scannerRef.current.clear().catch(console.error);
             }
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const onScanSuccess = (decodedText: string) => {
@@ -43,7 +55,7 @@ export function QRScanner() {
         handleVerification(decodedText);
     };
 
-    const onScanFailure = (error: any) => {
+    const onScanFailure = () => {
         // Handle scan failure
     };
 
@@ -116,7 +128,7 @@ export function QRScanner() {
                                 <h2 className="text-2xl font-bold text-green-700">Valid Ticket</h2>
                                 <div className="text-left bg-white/50 p-4 rounded-lg text-black">
                                     <p className="flex items-center gap-2"><User className="w-4 h-4" /> <strong>{ticketDetails?.user_name}</strong></p>
-                                    <p className="text-sm text-gray-600">Date: {new Date(ticketDetails?.event_date).toLocaleDateString()}</p>
+                                    <p className="text-sm text-gray-600">Date: {ticketDetails?.event_date ? new Date(ticketDetails.event_date).toLocaleDateString() : 'N/A'}</p>
                                     <p className="text-sm text-gray-600">Code: {scanResult}</p>
                                 </div>
                             </>
@@ -128,7 +140,7 @@ export function QRScanner() {
                                 <h2 className="text-2xl font-bold text-orange-700">Already Used</h2>
                                 <div className="text-left bg-white/50 p-4 rounded-lg text-black">
                                     <p className="flex items-center gap-2"><User className="w-4 h-4" /> <strong>{ticketDetails?.user_name}</strong></p>
-                                    <p className="text-sm text-gray-600">Date: {new Date(ticketDetails?.event_date).toLocaleDateString()}</p>
+                                    <p className="text-sm text-gray-600">Date: {ticketDetails?.event_date ? new Date(ticketDetails.event_date).toLocaleDateString() : 'N/A'}</p>
                                 </div>
                             </>
                         )}

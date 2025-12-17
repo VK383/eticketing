@@ -1,9 +1,10 @@
 import TicketView from "@/components/ticket-view";
 
-export default function TicketPage({ params }: { params: { id: string } }) {
+export default async function TicketPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     return (
         <main className="min-h-screen bg-gray-50 dark:bg-zinc-900 flex items-center justify-center p-4">
-            <TicketView id={params.id} />
+            <TicketView id={id} />
         </main>
     );
 }

@@ -5,25 +5,42 @@ import { useSearchParams } from "next/navigation";
 import { QRCodeCanvas } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, Loader2, CheckCircle2 } from "lucide-react";
+import { Download, Loader2, CheckCircle2, AlertCircle, Clock } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { formatINR } from "@/lib/ticket-pricing";
 
 interface TicketProps {
     id: string;
 }
 
+interface Ticket {
+    id: string;
+    user_name: string;
+    user_phone: string;
+    user_email: string | null;
+    event_date: string;
+    status: string;
+    ticket_code: string;
+    created_at: string;
+    ticket_type?: string;
+    amount?: number;
+    payment_status?: string;
+    payment_id?: string;
+}
+
 export default function TicketView({ id }: TicketProps) {
     const searchParams = useSearchParams();
     const codeFromUrl = searchParams.get("code");
+    const paymentStatus = searchParams.get("payment");
     
-    const [ticket, setTicket] = useState<any>(null);
+    const [ticket, setTicket] = useState<Ticket | null>(null);
     const [loading, setLoading] = useState(true);
     const [downloading, setDownloading] = useState(false);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
         const fetchTicket = async () => {
-            const { data, error } = await supabase
+            const { data } = await supabase
                 .from("tickets")
                 .select("*")
                 .eq("id", id)
@@ -109,6 +126,56 @@ export default function TicketView({ id }: TicketProps) {
 
     if (loading) {
         return <div className="flex justify-center p-10"><Loader2 className="animate-spin" /></div>;
+    }
+
+    // Payment failed or pending
+    if (ticket && ticket.payment_status !== 'success') {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[80vh] w-full p-4">
+                <Card className="w-full max-w-md">
+                    <CardHeader className={`text-center py-8 ${
+                        paymentStatus === 'failed' ? 'bg-destructive/10' : 'bg-yellow-50'
+                    }`}>
+                        {paymentStatus === 'failed' ? (
+                            <>
+                                <AlertCircle className="w-16 h-16 mx-auto mb-4 text-destructive" />
+                                <CardTitle className="text-2xl text-destructive">Payment Failed</CardTitle>
+                            </>
+                        ) : (
+                            <>
+                                <Clock className="w-16 h-16 mx-auto mb-4 text-yellow-600" />
+                                <CardTitle className="text-2xl text-yellow-700">Payment Pending</CardTitle>
+                            </>
+                        )}
+                    </CardHeader>
+                    <CardContent className="pt-6 space-y-4">
+                        <div className="text-center space-y-2">
+                            <p className="text-muted-foreground">
+                                {paymentStatus === 'failed' 
+                                    ? "Your payment could not be processed. Please try again."
+                                    : "Your payment is being processed. Please wait..."}
+                            </p>
+                            <div className="pt-4 space-y-1 text-sm">
+                                <p><strong>Name:</strong> {ticket.user_name}</p>
+                                <p><strong>Ticket Type:</strong> {ticket.ticket_type?.toUpperCase()}</p>
+                                <p><strong>Amount:</strong> {formatINR(ticket.amount || 0)}</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                    <CardFooter className="flex-col gap-2">
+                        <Button 
+                            onClick={() => window.location.href = '/book'} 
+                            className="w-full"
+                        >
+                            Try Again
+                        </Button>
+                        <p className="text-xs text-center text-muted-foreground">
+                            Contact support if payment was deducted
+                        </p>
+                    </CardFooter>
+                </Card>
+            </div>
+        );
     }
 
     return (

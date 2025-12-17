@@ -6,8 +6,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import { Loader2, Users, CheckCircle, XCircle } from "lucide-react";
 
+interface ChartData {
+    name: string;
+    bookings: number;
+}
+
+interface Ticket {
+    status: string;
+    created_at: string;
+}
+
 export function AnalyticsDashboard() {
-    const [data, setData] = useState<any[]>([]);
+    const [data, setData] = useState<ChartData[]>([]);
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({
         total: 0,
@@ -29,12 +39,12 @@ export function AnalyticsDashboard() {
 
             if (tickets) {
                 const total = tickets.length;
-                const used = tickets.filter(t => t.status === "used").length;
-                const booked = tickets.filter(t => t.status === "booked").length;
+                const used = tickets.filter((t: Ticket) => t.status === "used").length;
+                const booked = tickets.filter((t: Ticket) => t.status === "booked").length;
 
                 setStats({ total, used, booked });
 
-                const grouped = tickets.reduce((acc: any, t) => {
+                const grouped = tickets.reduce((acc: Record<string, number>, t: Ticket) => {
                     const date = new Date(t.created_at).toLocaleDateString();
                     acc[date] = (acc[date] || 0) + 1;
                     return acc;
