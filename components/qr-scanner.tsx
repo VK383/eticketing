@@ -30,6 +30,7 @@ export function QRScanner() {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [scanningPaused, setScanningPaused] = useState(false);
     const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+    const isProcessingRef = useRef(false);
 
     // Success beep sound
     const playBeep = (isSuccess: boolean) => {
@@ -72,13 +73,14 @@ export function QRScanner() {
     }, []);
 
     const onScanSuccess = (decodedText: string) => {
-        // Don't scan if we're already processing or paused
-        if (verificationStatus === "VERIFYING" || scanningPaused) return;
+        // Use ref for immediate synchronous check (prevents race condition)
+        if (isProcessingRef.current) return;
 
         // Check if we are already showing a result for this code to prevent spam
         if (scanResult === decodedText && (verificationStatus === 'VALID' || verificationStatus === 'USED' || verificationStatus === 'INVALID')) return;
 
-        // Pause scanning immediately
+        // Block scanning immediately (synchronous)
+        isProcessingRef.current = true;
         setScanningPaused(true);
         
         // Actually pause the scanner
@@ -163,7 +165,8 @@ export function QRScanner() {
         setVerificationStatus("IDLE");
         setTicketDetails(null);
         setShowConfirmation(false);
-        setScanningPaused(false); // Resume scanning
+        setScanningPaused(false);
+        isProcessingRef.current = false; // Reset processing flag
         
         // Actually resume the scanner
         if (scannerRef.current) {
@@ -172,7 +175,83 @@ export function QRScanner() {
     };
 
     return (
-        <div className="w-full max-w-md mx-auto space-y-4">
+        <div className="w-full max-w-md mx-auto relative">
+            {/* Dialog positioned above scanner with absolute positioning and overlay */}
+            {verificationStatus !== "IDLE" && (
+                <div className="absolute top-0 left-0 right-0 z-50 mb-4">
+                    <Card className={`border-2 shadow-2xl ${verificationStatus === 'VALID' ? 'border-green-500 bg-green-500/10' :
+                            verificationStatus === 'USED' ? 'border-orange-500 bg-orange-500/10' :
+                                verificationStatus === 'VERIFYING' ? 'border-blue-500' :
+                                    'border-red-500 bg-red-500/10'
+                        }`}>
+                        <CardContent className="pt-6 text-center space-y-4">
+                            {verificationStatus === "VERIFYING" && <Loader2 className="w-12 h-12 mx-auto animate-spin" />}
+
+                            {verificationStatus === "VALID" && (
+                                <>
+                                    <CheckCircle className="w-16 h-16 mx-auto text-green-600" />
+                                    <h2 className="text-2xl font-bold text-green-700">✅ Scanning Successful!</h2>
+                                    <div className="text-left bg-white/50 p-4 rounded-lg text-black space-y-2">
+                                        <p className="flex items-center gap-2"><User className="w-4 h-4" /> <strong>{ticketDetails?.user_name}</strong></p>
+                                        <p className="text-sm text-gray-600">Date: {ticketDetails?.event_date ? new Date(ticketDetails.event_date).toLocaleDateString() : 'N/A'}</p>
+                                        <p className="text-sm text-gray-600">Code: {scanResult}</p>
+                                        {ticketDetails?.attendee_count && ticketDetails.attendee_count > 1 && (
+                                            <p className="text-lg font-bold text-primary mt-2">
+                                                🎫 Group of {ticketDetails.attendee_count} people
+                                            </p>
+                                        )}
+                                    </div>
+                                    
+                                    {showConfirmation && ticketDetails?.attendee_count && ticketDetails.attendee_count > 1 && (
+                                        <div className="bg-yellow-50 border-2 border-yellow-400 p-4 rounded-lg">
+                                            <p className="font-semibold text-yellow-800">
+                                                ⚠️ Have all {ticketDetails.attendee_count} people entered?
+                                            </p>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+
+                            {verificationStatus === "USED" && (
+                                <>
+                                    <AlertCircle className="w-16 h-16 mx-auto text-orange-600" />
+                                    <h2 className="text-2xl font-bold text-orange-700">⚠️ Already Used</h2>
+                                    <div className="text-left bg-white/50 p-4 rounded-lg text-black space-y-2">
+                                        <p className="flex items-center gap-2"><User className="w-4 h-4" /> <strong>{ticketDetails?.user_name}</strong></p>
+                                        <p className="text-sm text-gray-600">Date: {ticketDetails?.event_date ? new Date(ticketDetails.event_date).toLocaleDateString() : 'N/A'}</p>
+                                        <p className="text-sm text-gray-600">Code: {scanResult}</p>
+                                        {ticketDetails?.attendee_count && ticketDetails.attendee_count > 1 && (
+                                            <p className="text-sm text-gray-600">
+                                                Group: {ticketDetails.attendee_count} people
+                                            </p>
+                                        )}
+                                        <div className="mt-3 pt-3 border-t border-orange-300">
+                                            <p className="text-orange-700 font-bold">
+                                                Scanned {ticketDetails?.scan_count || 0} times
+                                            </p>
+                                            <p className="text-xs text-orange-600">
+                                                Already scanned {((ticketDetails?.scan_count || 1) - 1)} time(s) after first entry
+                                            </p>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+
+                            {verificationStatus === "INVALID" && (
+                                <>
+                                    <XCircle className="w-16 h-16 mx-auto text-red-600" />
+                                    <h2 className="text-2xl font-bold text-red-700">Invalid Ticket</h2>
+                                    <p>This code does not exist in the database.</p>
+                                </>
+                            )}
+
+                            <Button onClick={reset} size="lg" className="w-full">Scan Next</Button>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
+
+            {/* Scanner Card - positioned below dialog */}
             <Card>
                 <CardHeader>
                     <CardTitle className="text-center">Scan Ticket</CardTitle>
@@ -181,83 +260,11 @@ export function QRScanner() {
                     <div id="reader" className={`w-full overflow-hidden rounded-lg bg-black text-white transition-opacity ${scanningPaused ? 'opacity-50' : ''}`}></div>
                     {scanningPaused && (
                         <p className="text-center text-sm text-muted-foreground mt-2">
-                            📷 Scanner paused - Click &quot;Scan Next&quot; below to continue
+                            📷 Scanner paused - Review result above
                         </p>
                     )}
                 </CardContent>
             </Card>
-
-            {verificationStatus !== "IDLE" && (
-                <Card className={`border-2 ${verificationStatus === 'VALID' ? 'border-green-500 bg-green-500/10' :
-                        verificationStatus === 'USED' ? 'border-orange-500 bg-orange-500/10' :
-                            verificationStatus === 'VERIFYING' ? 'border-blue-500' :
-                                'border-red-500 bg-red-500/10'
-                    }`}>
-                    <CardContent className="pt-6 text-center space-y-4">
-                        {verificationStatus === "VERIFYING" && <Loader2 className="w-12 h-12 mx-auto animate-spin" />}
-
-                        {verificationStatus === "VALID" && (
-                            <>
-                                <CheckCircle className="w-16 h-16 mx-auto text-green-600" />
-                                <h2 className="text-2xl font-bold text-green-700">✅ Scanning Successful!</h2>
-                                <div className="text-left bg-white/50 p-4 rounded-lg text-black space-y-2">
-                                    <p className="flex items-center gap-2"><User className="w-4 h-4" /> <strong>{ticketDetails?.user_name}</strong></p>
-                                    <p className="text-sm text-gray-600">Date: {ticketDetails?.event_date ? new Date(ticketDetails.event_date).toLocaleDateString() : 'N/A'}</p>
-                                    <p className="text-sm text-gray-600">Code: {scanResult}</p>
-                                    {ticketDetails?.attendee_count && ticketDetails.attendee_count > 1 && (
-                                        <p className="text-lg font-bold text-primary mt-2">
-                                            🎫 Group of {ticketDetails.attendee_count} people
-                                        </p>
-                                    )}
-                                </div>
-                                
-                                {showConfirmation && ticketDetails?.attendee_count && ticketDetails.attendee_count > 1 && (
-                                    <div className="bg-yellow-50 border-2 border-yellow-400 p-4 rounded-lg">
-                                        <p className="font-semibold text-yellow-800">
-                                            ⚠️ Have all {ticketDetails.attendee_count} people entered?
-                                        </p>
-                                    </div>
-                                )}
-                            </>
-                        )}
-
-                        {verificationStatus === "USED" && (
-                            <>
-                                <AlertCircle className="w-16 h-16 mx-auto text-orange-600" />
-                                <h2 className="text-2xl font-bold text-orange-700">⚠️ Already Used</h2>
-                                <div className="text-left bg-white/50 p-4 rounded-lg text-black space-y-2">
-                                    <p className="flex items-center gap-2"><User className="w-4 h-4" /> <strong>{ticketDetails?.user_name}</strong></p>
-                                    <p className="text-sm text-gray-600">Date: {ticketDetails?.event_date ? new Date(ticketDetails.event_date).toLocaleDateString() : 'N/A'}</p>
-                                    <p className="text-sm text-gray-600">Code: {scanResult}</p>
-                                    {ticketDetails?.attendee_count && ticketDetails.attendee_count > 1 && (
-                                        <p className="text-sm text-gray-600">
-                                            Group: {ticketDetails.attendee_count} people
-                                        </p>
-                                    )}
-                                    <div className="mt-3 pt-3 border-t border-orange-300">
-                                        <p className="text-orange-700 font-bold">
-                                            Scanned {ticketDetails?.scan_count || 0} times
-                                        </p>
-                                        <p className="text-xs text-orange-600">
-                                            Already scanned {((ticketDetails?.scan_count || 1) - 1)} time(s) after first entry
-                                        </p>
-                                    </div>
-                                </div>
-                            </>
-                        )}
-
-                        {verificationStatus === "INVALID" && (
-                            <>
-                                <XCircle className="w-16 h-16 mx-auto text-red-600" />
-                                <h2 className="text-2xl font-bold text-red-700">Invalid Ticket</h2>
-                                <p>This code does not exist in the database.</p>
-                            </>
-                        )}
-
-                        <Button onClick={reset} size="lg" className="w-full">Scan Next</Button>
-                    </CardContent>
-                </Card>
-            )}
         </div>
     );
 }
