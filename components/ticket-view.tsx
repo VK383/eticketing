@@ -26,6 +26,7 @@ interface Ticket {
     amount?: number;
     payment_status?: string;
     payment_id?: string;
+    attendee_count?: number;
 }
 
 export default function TicketView({ id }: TicketProps) {
@@ -159,6 +160,13 @@ export default function TicketView({ id }: TicketProps) {
                      ctx.font = "16px Inter, sans-serif";
                      ctx.fillText(ticket.user_name, canvas.width / 2, 520);
                 }
+
+                // Add attendee count if more than 1
+                if (ticket?.attendee_count && ticket.attendee_count > 1) {
+                    ctx.font = "bold 14px Inter, sans-serif";
+                    ctx.fillStyle = "#666666";
+                    ctx.fillText(`${ticket.attendee_count} People`, canvas.width / 2, 540);
+                }
             }
         }, 200);
 
@@ -242,6 +250,14 @@ export default function TicketView({ id }: TicketProps) {
                     <p className="text-center text-sm text-muted-foreground px-4">
                         Your ticket code is <strong>{ticketCode}</strong>. <br />
                         Date: <strong>{eventDate}</strong>
+                        {ticket?.attendee_count && ticket.attendee_count > 1 && (
+                            <>
+                                <br />
+                                <span className="text-primary font-semibold">
+                                    Group of {ticket.attendee_count} people
+                                </span>
+                            </>
+                        )}
                     </p>
                 </CardContent>
                 <CardFooter className="flex justify-center pb-8">

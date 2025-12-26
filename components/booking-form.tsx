@@ -19,6 +19,7 @@ export function BookingForm() {
         email: "",
         date: "",
         ticketType: "general" as TicketType,
+        attendeeCount: 1,
     });
     const [error, setError] = useState<string | null>(null);
 
@@ -68,6 +69,7 @@ export function BookingForm() {
                         ticket_code: ticketCode,
                         ticket_type: formData.ticketType,
                         amount: ticketPrice,
+                        attendee_count: formData.attendeeCount,
                         status: "pending",
                         payment_status: "pending",
                     },
@@ -159,6 +161,23 @@ export function BookingForm() {
                             required
                             className="w-full"
                         />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="attendeeCount">Number of People</Label>
+                        <Input
+                            id="attendeeCount"
+                            type="number"
+                            min="1"
+                            max="50"
+                            value={formData.attendeeCount}
+                            onChange={(e) => setFormData({ ...formData, attendeeCount: parseInt(e.target.value) || 1 })}
+                            required
+                            className="w-full"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                            Book for multiple people (1-50 per ticket)
+                        </p>
                     </div>
                     
                     <div className="grid gap-4 md:grid-cols-2">
