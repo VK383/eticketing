@@ -1,6 +1,11 @@
 -- Migration: Update capacity to 1 lakh and seed Poopoli 2026 dates
 -- Date: 2025-12-26
 
+-- Update ticket_type constraint to include 'general' for Poopoli 2026
+ALTER TABLE tickets DROP CONSTRAINT IF EXISTS tickets_ticket_type_check;
+ALTER TABLE tickets ADD CONSTRAINT tickets_ticket_type_check 
+CHECK (ticket_type IN ('regular', 'vip', 'premium', 'general'));
+
 -- Update default capacity in event_dates table
 ALTER TABLE event_dates 
 ALTER COLUMN capacity SET DEFAULT 100000;
