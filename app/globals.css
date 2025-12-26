@@ -4,35 +4,70 @@
 
 @layer base {
     :root {
-        --background: 224 71% 4%;
-        --foreground: 213 31% 91%;
+        --background: 28 45% 96%;
+        --foreground: 25 30% 12%;
 
-        --card: 224 71% 4%;
-        --card-foreground: 213 31% 91%;
+        --card: 0 0% 100%;
+        --card-foreground: 25 30% 12%;
 
-        --popover: 224 71% 4%;
-        --popover-foreground: 213 31% 91%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 25 30% 12%;
 
-        --primary: 263 70% 50%;
-        --primary-foreground: 210 40% 98%;
+        --primary: 340 85% 55%;
+        --primary-foreground: 0 0% 100%;
 
-        --secondary: 222 47% 11%;
-        --secondary-foreground: 210 40% 98%;
+        --secondary: 145 55% 45%;
+        --secondary-foreground: 0 0% 100%;
 
-        --muted: 223 47% 11%;
-        --muted-foreground: 215.4 16.3% 56.9%;
+        --muted: 30 25% 90%;
+        --muted-foreground: 25 20% 40%;
 
-        --accent: 216 34% 17%;
-        --accent-foreground: 210 40% 98%;
+        --accent: 45 95% 60%;
+        --accent-foreground: 25 30% 12%;
 
-        --destructive: 0 63% 31%;
-        --destructive-foreground: 210 40% 98%;
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 100%;
 
-        --border: 216 34% 17%;
-        --input: 216 34% 17%;
-        --ring: 263 70% 50%;
+        --border: 145 30% 85%;
+        --input: 30 35% 94%;
+        --ring: 340 85% 55%;
 
         --radius: 0.5rem;
+        
+        --orchid-purple: 280 75% 65%;
+        --lotus-pink: 330 70% 75%;
+        --jasmine-white: 60 100% 97%;
+        --tulip-orange: 15 90% 60%;
+    }
+
+    .dark {
+        --background: 25 30% 8%;
+        --foreground: 28 45% 96%;
+
+        --card: 25 30% 10%;
+        --card-foreground: 28 45% 96%;
+
+        --popover: 25 30% 10%;
+        --popover-foreground: 28 45% 96%;
+
+        --primary: 340 85% 55%;
+        --primary-foreground: 0 0% 100%;
+
+        --secondary: 145 55% 35%;
+        --secondary-foreground: 0 0% 100%;
+
+        --muted: 25 20% 15%;
+        --muted-foreground: 30 25% 60%;
+
+        --accent: 45 95% 50%;
+        --accent-foreground: 25 30% 12%;
+
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 100%;
+
+        --border: 145 30% 20%;
+        --input: 25 20% 15%;
+        --ring: 340 85% 55%;
     }
 }
 
@@ -44,4 +79,142 @@
     body {
         @apply bg-background text-foreground;
     }
+}
+
+/* Flower Animation Keyframes */
+@keyframes flower-sway {
+  0%, 100% {
+    transform: rotate(0deg) translateX(0);
+  }
+  25% {
+    transform: rotate(2deg) translateX(2px);
+  }
+  50% {
+    transform: rotate(0deg) translateX(0);
+  }
+  75% {
+    transform: rotate(-2deg) translateX(-2px);
+  }
+}
+
+@keyframes flower-quiver {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  10% {
+    transform: rotate(0.5deg) scale(1.01);
+  }
+  20% {
+    transform: rotate(-0.5deg) scale(0.99);
+  }
+  30% {
+    transform: rotate(0.3deg) scale(1.005);
+  }
+  40% {
+    transform: rotate(-0.3deg) scale(0.995);
+  }
+  50% {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+@keyframes petal-flutter {
+  0%, 100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.95);
+  }
+}
+
+/* Bee Animation Keyframes */
+@keyframes bee-figure8 {
+  0% {
+    transform: translate(0, 0);
+  }
+  12.5% {
+    transform: translate(30px, -20px);
+  }
+  25% {
+    transform: translate(50px, 0);
+  }
+  37.5% {
+    transform: translate(30px, 20px);
+  }
+  50% {
+    transform: translate(0, 0);
+  }
+  62.5% {
+    transform: translate(-30px, -20px);
+  }
+  75% {
+    transform: translate(-50px, 0);
+  }
+  87.5% {
+    transform: translate(-30px, 20px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes bee-flight {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(100px, -30px) rotate(10deg);
+  }
+  50% {
+    transform: translate(200px, 0px) rotate(-5deg);
+  }
+  75% {
+    transform: translate(300px, -20px) rotate(8deg);
+  }
+  100% {
+    transform: translate(400px, 0) rotate(0deg);
+  }
+}
+
+@keyframes wing-buzz {
+  0%, 100% {
+    transform: scaleY(1) rotate(0deg);
+  }
+  50% {
+    transform: scaleY(0.3) rotate(5deg);
+  }
+}
+
+@keyframes bee-hover {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Performance optimizations */
+.animate-flower-sway,
+.animate-flower-quiver,
+.animate-petal-flutter,
+.animate-bee-figure8,
+.animate-bee-flight,
+.animate-wing-buzz,
+.animate-bee-hover {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Accessibility - Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-flower-sway,
+  .animate-flower-quiver,
+  .animate-petal-flutter,
+  .animate-bee-figure8,
+  .animate-bee-flight,
+  .animate-wing-buzz,
+  .animate-bee-hover {
+    animation: none;
+  }
 }

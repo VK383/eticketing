@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Mega Event 2025",
-    description: "Book your tickets now!",
+    title: "Poopoli 2026 - Flower Show Tickets",
+    description: "Book tickets for Poopoli 2026 Flower Show at Ambalavayal, Wayanad | January 1-15, 2026",
 };
 
 export default function RootLayout({

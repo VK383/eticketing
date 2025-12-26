@@ -85,16 +85,33 @@ export default function TicketView({ id }: TicketProps) {
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle = "#7c3aed";
+        // Create floral gradient for header
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+        gradient.addColorStop(0, "hsl(340, 85%, 55%)");
+        gradient.addColorStop(0.5, "hsl(45, 95%, 60%)");
+        gradient.addColorStop(1, "hsl(145, 55%, 45%)");
+        ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, 140);
 
         ctx.fillStyle = "#ffffff";
         ctx.font = "bold 40px Inter, sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText("MEGA EVENT 2025", canvas.width / 2, 80);
+        ctx.fillText("POOPOLI 2026", canvas.width / 2, 80);
 
         ctx.font = "20px Inter, sans-serif";
         ctx.fillText(eventDate, canvas.width / 2, 115);
+
+        // Add floral decorative border elements
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+        ctx.lineWidth = 2;
+        // Left flower accent
+        ctx.beginPath();
+        ctx.arc(30, 70, 15, 0, Math.PI * 2);
+        ctx.stroke();
+        // Right flower accent
+        ctx.beginPath();
+        ctx.arc(canvas.width - 30, 70, 15, 0, Math.PI * 2);
+        ctx.stroke();
 
         ctx.fillStyle = "#000000";
         ctx.textAlign = "center";
@@ -106,7 +123,30 @@ export default function TicketView({ id }: TicketProps) {
         ctx.fillStyle = "#666666";
         ctx.fillText("Present this QR code at the entrance", canvas.width / 2, 230);
 
+        // Add subtle floral watermark behind QR code
         setTimeout(() => {
+            // Draw watermark flower
+            ctx.globalAlpha = 0.05;
+            ctx.fillStyle = "hsl(340, 85%, 55%)";
+            const centerX = canvas.width / 2;
+            const centerY = 360;
+            // Simple flower petals
+            for (let i = 0; i < 8; i++) {
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate((Math.PI * 2 * i) / 8);
+                ctx.beginPath();
+                ctx.ellipse(0, -40, 20, 35, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+            // Flower center
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 15, 0, Math.PI * 2);
+            ctx.fillStyle = "hsl(45, 95%, 60%)";
+            ctx.fill();
+            ctx.globalAlpha = 1.0;
+
             const qrCanvas = document.getElementById("qr-source") as HTMLCanvasElement;
             if (qrCanvas) {
                 ctx.drawImage(qrCanvas, (canvas.width - 200) / 2, 260, 200, 200);

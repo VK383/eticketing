@@ -1,22 +1,10 @@
-// Ticket pricing configuration
+// Ticket pricing configuration - Poopoli 2026 Flower Show
 export const TICKET_TYPES = {
-  regular: {
-    name: "Regular",
-    price: 500,
-    description: "Standard entry to the event",
-    features: ["Event access", "Standard seating"]
-  },
-  vip: {
-    name: "VIP",
-    price: 1500,
-    description: "Premium experience with exclusive benefits",
-    features: ["Priority entry", "VIP seating", "Complimentary snacks", "Meet & Greet access"]
-  },
-  premium: {
-    name: "Premium",
-    price: 3000,
-    description: "Ultimate luxury experience",
-    features: ["Exclusive entry", "Front row seating", "Gourmet meals", "Backstage access", "Event merchandise"]
+  general: {
+    name: "General Entry",
+    price: 70,
+    description: "Entry to Poopoli 2026 Flower Show",
+    features: ["Full event access", "View all flower exhibits", "Photography allowed", "Event souvenir"]
   }
 } as const;
 

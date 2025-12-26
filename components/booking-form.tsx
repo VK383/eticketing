@@ -18,7 +18,7 @@ export function BookingForm() {
         phone: "",
         email: "",
         date: "",
-        ticketType: "regular" as TicketType,
+        ticketType: "general" as TicketType,
     });
     const [error, setError] = useState<string | null>(null);
 
@@ -133,47 +133,19 @@ export function BookingForm() {
             </CardHeader>
             <form onSubmit={handleSubmit}>
                 <CardContent className="space-y-6">
-                    {/* Ticket Type Selection */}
-                    <div className="space-y-3">
-                        <Label>Select Ticket Type</Label>
-                        <div className="grid gap-3 md:grid-cols-3">
-                            {(Object.keys(TICKET_TYPES) as TicketType[]).map((type) => {
-                                const ticket = TICKET_TYPES[type];
-                                const isSelected = formData.ticketType === type;
-                                return (
-                                    <div
-                                        key={type}
-                                        onClick={() => setFormData({ ...formData, ticketType: type })}
-                                        className={`relative cursor-pointer rounded-lg border-2 p-4 transition-all ${
-                                            isSelected
-                                                ? 'border-primary bg-primary/5'
-                                                : 'border-border hover:border-primary/50'
-                                        }`}
-                                    >
-                                        {isSelected && (
-                                            <div className="absolute right-2 top-2">
-                                                <Check className="h-5 w-5 text-primary" />
-                                            </div>
-                                        )}
-                                        <div className="space-y-2">
-                                            <h3 className="font-semibold">{ticket.name}</h3>
-                                            <p className="text-2xl font-bold text-primary">
-                                                {formatINR(ticket.price)}
-                                            </p>
-                                            <p className="text-sm text-muted-foreground">{ticket.description}</p>
-                                            <ul className="space-y-1 text-xs text-muted-foreground">
-                                                {ticket.features.map((feature, idx) => (
-                                                    <li key={idx} className="flex items-start gap-1">
-                                                        <span className="mt-0.5">•</span>
-                                                        <span>{feature}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
+                    {/* Ticket Pricing Info */}
+                    <div className="rounded-lg border-2 border-primary/20 bg-primary/5 p-6 text-center space-y-2">
+                        <h3 className="text-lg font-semibold">General Entry</h3>
+                        <p className="text-4xl font-bold text-primary">{formatINR(TICKET_TYPES.general.price)}</p>
+                        <p className="text-sm text-muted-foreground">{TICKET_TYPES.general.description}</p>
+                        <ul className="pt-3 space-y-1.5 text-sm text-muted-foreground">
+                            {TICKET_TYPES.general.features.map((feature, idx) => (
+                                <li key={idx} className="flex items-center justify-center gap-2">
+                                    <Check className="h-4 w-4 text-primary" />
+                                    <span>{feature}</span>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
 
                     <div className="space-y-2">

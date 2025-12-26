@@ -260,7 +260,8 @@ export function AnalyticsDashboard() {
             </div>
 
             {/* Charts Grid */}
-            <div className="grid gap-4 md:grid-cols-2">\n                {/* Booking Trends */}
+            <div className="grid gap-4 md:grid-cols-2">
+                {/* Booking Trends */}
                 <Card>
                     <CardHeader>
                         <CardTitle>Booking Trends (Last 7 Days)</CardTitle>
