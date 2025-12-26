@@ -5,10 +5,8 @@
 ALTER TABLE event_dates 
 ALTER COLUMN capacity SET DEFAULT 100000;
 
--- Delete old seed data if exists
-DELETE FROM event_dates WHERE event_date >= '2025-12-20' AND event_date <= '2026-01-10';
-
 -- Insert Poopoli 2026 dates (January 1-15, 2026) with 1 lakh capacity
+-- If dates already exist, only update capacity (preserve existing bookings)
 INSERT INTO event_dates (event_date, capacity, booked) VALUES
 ('2026-01-01', 100000, 0),
 ('2026-01-02', 100000, 0),
@@ -26,4 +24,4 @@ INSERT INTO event_dates (event_date, capacity, booked) VALUES
 ('2026-01-14', 100000, 0),
 ('2026-01-15', 100000, 0)
 ON CONFLICT (event_date) 
-DO UPDATE SET capacity = 100000, booked = 0;
+DO UPDATE SET capacity = 100000;
