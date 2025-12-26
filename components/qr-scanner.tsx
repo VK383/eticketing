@@ -28,6 +28,7 @@ export function QRScanner() {
     const [verificationStatus, setVerificationStatus] = useState<"IDLE" | "VERIFYING" | "VALID" | "USED" | "INVALID">("IDLE");
     const [ticketDetails, setTicketDetails] = useState<Ticket | null>(null);
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [scanningPaused, setScanningPaused] = useState(false);
     const scannerRef = useRef<Html5QrcodeScanner | null>(null);
 
     // Success beep sound
@@ -71,11 +72,14 @@ export function QRScanner() {
     }, []);
 
     const onScanSuccess = (decodedText: string) => {
-        if (verificationStatus === "VERIFYING") return;
+        // Don't scan if we're already processing or paused
+        if (verificationStatus === "VERIFYING" || scanningPaused) return;
 
         // Check if we are already showing a result for this code to prevent spam
-        if (scanResult === decodedText && (verificationStatus === 'VALID' || verificationStatus === 'USED')) return;
+        if (scanResult === decodedText && (verificationStatus === 'VALID' || verificationStatus === 'USED' || verificationStatus === 'INVALID')) return;
 
+        // Pause scanning immediately
+        setScanningPaused(true);
         handleVerification(decodedText);
     };
 
@@ -153,6 +157,7 @@ export function QRScanner() {
         setVerificationStatus("IDLE");
         setTicketDetails(null);
         setShowConfirmation(false);
+        setScanningPaused(false); // Resume scanning
     };
 
     return (
@@ -162,7 +167,12 @@ export function QRScanner() {
                     <CardTitle className="text-center">Scan Ticket</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div id="reader" className="w-full overflow-hidden rounded-lg bg-black text-white"></div>
+                    <div id="reader" className={`w-full overflow-hidden rounded-lg bg-black text-white transition-opacity ${scanningPaused ? 'opacity-50' : ''}`}></div>
+                    {scanningPaused && (
+                        <p className="text-center text-sm text-muted-foreground mt-2">
+                            📷 Scanner paused - Click &quot;Scan Next&quot; below to continue
+                        </p>
+                    )}
                 </CardContent>
             </Card>
 
