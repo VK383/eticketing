@@ -139,6 +139,9 @@ export function BookingForm() {
                     <div className="rounded-lg border-2 border-primary/20 bg-primary/5 p-6 text-center space-y-2">
                         <h3 className="text-lg font-semibold">General Entry</h3>
                         <p className="text-4xl font-bold text-primary">{formatINR(TICKET_TYPES.general.price)}</p>
+                        {formData.attendeeCount > 1 && (
+                            <p className="text-2xl font-semibold text-primary/80">Total: {formatINR(TICKET_TYPES.general.price * formData.attendeeCount)}</p>
+                        )}
                         <p className="text-sm text-muted-foreground">{TICKET_TYPES.general.description}</p>
                         <ul className="pt-3 space-y-1.5 text-sm text-muted-foreground">
                             {TICKET_TYPES.general.features.map((feature, idx) => (
@@ -230,7 +233,7 @@ export function BookingForm() {
                             </>
                         ) : (
                             <>
-                                Pay {formatINR(TICKET_TYPES[formData.ticketType].price)} & Book
+                                Pay {formatINR(TICKET_TYPES[formData.ticketType].price * formData.attendeeCount)} & Book
                             </>
                         )}
                     </Button>

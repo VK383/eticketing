@@ -80,6 +80,12 @@ export function QRScanner() {
 
         // Pause scanning immediately
         setScanningPaused(true);
+        
+        // Actually pause the scanner
+        if (scannerRef.current) {
+            scannerRef.current.pause(true);
+        }
+        
         handleVerification(decodedText);
     };
 
@@ -158,6 +164,11 @@ export function QRScanner() {
         setTicketDetails(null);
         setShowConfirmation(false);
         setScanningPaused(false); // Resume scanning
+        
+        // Actually resume the scanner
+        if (scannerRef.current) {
+            scannerRef.current.resume();
+        }
     };
 
     return (
