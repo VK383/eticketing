@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { PHONEPE_CONFIG } from '@/lib/phonepe-config';
+import { PHONEPE_CONFIG, validatePhonePeConfig } from '@/lib/phonepe-config';
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,6 +11,44 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { success: false, message: 'Missing required fields' },
         { status: 400 }
+      );
+    }
+
+    // Check if we're in mock mode for testing
+    const paymentMode = process.env.NEXT_PUBLIC_PAYMENT_MODE;
+    if (paymentMode === 'mock') {
+      console.log('🧪 MOCK PAYMENT MODE - Simulating successful payment');
+      const merchantTransactionId = `TXN-${ticketId}-${Date.now()}`;
+      
+      // Return mock payment URL that redirects to verify endpoint
+      return NextResponse.json({
+        success: true,
+        paymentUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/payment/verify?ticketId=${ticketId}&transactionId=${merchantTransactionId}&status=success`,
+        merchantTransactionId
+      });
+    }
+
+    // Log environment variables for debugging
+    console.log('=== PhonePe Configuration Debug ===');
+    console.log('Merchant ID:', process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID);
+    console.log('Salt Key exists:', !!process.env.PHONEPE_SALT_KEY);
+    console.log('Salt Index:', process.env.PHONEPE_SALT_INDEX);
+    console.log('API Endpoint:', process.env.PHONEPE_API_ENDPOINT);
+    console.log('PHONEPE_CONFIG:', {
+      merchantId: PHONEPE_CONFIG.merchantId,
+      saltKeyExists: !!PHONEPE_CONFIG.saltKey,
+      saltKeyLength: PHONEPE_CONFIG.saltKey?.length,
+      saltIndex: PHONEPE_CONFIG.saltIndex,
+      apiEndpoint: PHONEPE_CONFIG.apiEndpoint
+    });
+    
+    // Validate PhonePe configuration first
+    const configCheck = validatePhonePeConfig();
+    if (!configCheck.valid) {
+      console.error('PhonePe config error:', configCheck.error);
+      return NextResponse.json(
+        { success: false, message: configCheck.error },
+        { status: 500 }
       );
     }
 
@@ -59,6 +97,9 @@ export async function POST(request: NextRequest) {
 
     const result = await response.json();
 
+    // Log the full response for debugging
+    console.log('PhonePe Response:', JSON.stringify(result, null, 2));
+
     if (result.success && result.data?.instrumentResponse?.redirectInfo?.url) {
       return NextResponse.json({
         success: true,
@@ -67,9 +108,13 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // Return detailed error message from PhonePe
+    const errorMessage = result.message || result.code || 'Failed to initiate payment';
+    console.error('PhonePe Error:', errorMessage, result);
+    
     return NextResponse.json({
       success: false,
-      message: result.message || 'Failed to initiate payment'
+      message: `Payment initiation failed: ${errorMessage}`
     }, { status: 500 });
 
   } catch (error) {

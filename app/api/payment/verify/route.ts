@@ -8,6 +8,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const ticketId = searchParams.get('ticketId');
     const transactionId = searchParams.get('transactionId') || searchParams.get('merchantTransactionId');
+    const mockStatus = searchParams.get('status'); // For mock payments
 
     if (!ticketId || !transactionId) {
       return NextResponse.redirect(
@@ -15,6 +16,31 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Handle mock payment mode
+    if (mockStatus === 'success') {
+      console.log('🧪 MOCK PAYMENT - Marking as successful');
+      
+      const { error } = await supabase
+        .from('tickets')
+        .update({
+          payment_status: 'success',
+          payment_id: transactionId,
+          payment_method: 'MOCK_UPI',
+          payment_completed_at: new Date().toISOString(),
+          status: 'booked'
+        })
+        .eq('id', ticketId);
+
+      if (error) {
+        console.error('Database update error:', error);
+      }
+
+      return NextResponse.redirect(
+        new URL(`/ticket/${ticketId}?payment=success`, request.url)
+      );
+    }
+
+    // Real PhonePe payment verification
     // Check payment status with PhonePe
     const statusUrl = `${PHONEPE_CONFIG.apiEndpoint}/pg/v1/status/${PHONEPE_CONFIG.merchantId}/${transactionId}`;
     

@@ -42,6 +42,17 @@ export const PHONEPE_CONFIG = {
   callbackUrl: process.env.NEXT_PUBLIC_APP_URL ? `${process.env.NEXT_PUBLIC_APP_URL}/api/payment/callback` : 'http://localhost:3000/api/payment/callback',
 };
 
+// Validate PhonePe credentials
+export function validatePhonePeConfig(): { valid: boolean; error?: string } {
+  if (!PHONEPE_CONFIG.merchantId || PHONEPE_CONFIG.merchantId === 'MERCHANTUAT') {
+    return { valid: false, error: 'PhonePe Merchant ID not configured. Please update NEXT_PUBLIC_PHONEPE_MERCHANT_ID in .env.local' };
+  }
+  if (!PHONEPE_CONFIG.saltKey || PHONEPE_CONFIG.saltKey === '') {
+    return { valid: false, error: 'PhonePe Salt Key not configured. Please update PHONEPE_SALT_KEY in .env.local' };
+  }
+  return { valid: true };
+}
+
 export function generateMerchantTransactionId(ticketId: string): string {
   const timestamp = Date.now();
   return `TXN-${ticketId}-${timestamp}`;
