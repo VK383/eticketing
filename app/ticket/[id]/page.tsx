@@ -3,6 +3,7 @@ import TicketView from "@/components/ticket-view";
 // Force dynamic rendering - no caching
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+export const runtime = 'nodejs';
 
 export default async function TicketPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
