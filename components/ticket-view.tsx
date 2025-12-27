@@ -1,5 +1,6 @@
 "use client";
 
+// Poopoli 2026 Ticketing System - v2.0.0 - December 27, 2025
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { QRCodeCanvas } from "qrcode.react";
@@ -86,11 +87,11 @@ export default function TicketView({ id }: TicketProps) {
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Create floral gradient for header
+        // Create floral gradient for header - POOPOLI 2026 UPDATE
         const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
-        gradient.addColorStop(0, "hsl(340, 85%, 55%)");
-        gradient.addColorStop(0.5, "hsl(45, 95%, 60%)");
-        gradient.addColorStop(1, "hsl(145, 55%, 45%)");
+        gradient.addColorStop(0, "hsl(340, 85%, 55%)"); // Hibiscus red
+        gradient.addColorStop(0.5, "hsl(45, 95%, 60%)"); // Marigold yellow
+        gradient.addColorStop(1, "hsl(145, 55%, 45%)"); // Leaf green
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, 140);
 
@@ -98,7 +99,8 @@ export default function TicketView({ id }: TicketProps) {
         ctx.font = "bold 40px Inter, sans-serif";
         ctx.textAlign = "center";
         // POOPOLI 2026 - Flower Show (Version 2.0 - Dec 27, 2025)
-        ctx.fillText("POOPOLI 2026", canvas.width / 2, 80);
+        const eventTitle = "POOPOLI 2026";
+        ctx.fillText(eventTitle, canvas.width / 2, 80);
 
         ctx.font = "20px Inter, sans-serif";
         ctx.fillText(eventDate, canvas.width / 2, 115);
