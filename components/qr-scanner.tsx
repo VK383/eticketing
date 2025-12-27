@@ -179,19 +179,18 @@ export function QRScanner() {
             {/* Dialog positioned above scanner with absolute positioning and overlay */}
             {verificationStatus !== "IDLE" && (
                 <div className="absolute top-0 left-0 right-0 z-50 mb-4">
-                    <Card className={`border-2 shadow-2xl ${verificationStatus === 'VALID' ? 'border-green-500 bg-green-500/10' :
-                            verificationStatus === 'USED' ? 'border-orange-500 bg-orange-500/10' :
+                    <Card className={`border-2 shadow-2xl bg-white ${verificationStatus === 'VALID' ? 'border-green-500' :
+                            verificationStatus === 'USED' ? 'border-orange-500' :
                                 verificationStatus === 'VERIFYING' ? 'border-blue-500' :
-                                    'border-red-500 bg-red-500/10'
+                                    'border-red-500'
                         }`}>
-                        <CardContent className="pt-6 text-center space-y-4">
-                            {verificationStatus === "VERIFYING" && <Loader2 className="w-12 h-12 mx-auto animate-spin" />}
+                        <CardContent className="pt-6 text-center space-y-4">{verificationStatus === "VERIFYING" && <Loader2 className="w-12 h-12 mx-auto animate-spin" />}
 
                             {verificationStatus === "VALID" && (
                                 <>
                                     <CheckCircle className="w-16 h-16 mx-auto text-green-600" />
                                     <h2 className="text-2xl font-bold text-green-700">✅ Scanning Successful!</h2>
-                                    <div className="text-left bg-white/50 p-4 rounded-lg text-black space-y-2">
+                                    <div className="text-left bg-green-50 p-4 rounded-lg border border-green-200 space-y-2">
                                         <p className="flex items-center gap-2"><User className="w-4 h-4" /> <strong>{ticketDetails?.user_name}</strong></p>
                                         <p className="text-sm text-gray-600">Date: {ticketDetails?.event_date ? new Date(ticketDetails.event_date).toLocaleDateString() : 'N/A'}</p>
                                         <p className="text-sm text-gray-600">Code: {scanResult}</p>
@@ -216,8 +215,8 @@ export function QRScanner() {
                                 <>
                                     <AlertCircle className="w-16 h-16 mx-auto text-orange-600" />
                                     <h2 className="text-2xl font-bold text-orange-700">⚠️ Already Used</h2>
-                                    <div className="text-left bg-white/50 p-4 rounded-lg text-black space-y-2">
-                                        <p className="flex items-center gap-2"><User className="w-4 h-4" /> <strong>{ticketDetails?.user_name}</strong></p>
+                                <div className="text-left bg-orange-50 p-4 rounded-lg border border-orange-200 space-y-2">
+                                    <p className="flex items-center gap-2"><User className="w-4 h-4 text-black" /> <strong className="text-black">{ticketDetails?.user_name}</strong></p>
                                         <p className="text-sm text-gray-600">Date: {ticketDetails?.event_date ? new Date(ticketDetails.event_date).toLocaleDateString() : 'N/A'}</p>
                                         <p className="text-sm text-gray-600">Code: {scanResult}</p>
                                         {ticketDetails?.attendee_count && ticketDetails.attendee_count > 1 && (
