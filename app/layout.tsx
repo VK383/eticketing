@@ -8,6 +8,8 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
     title: "Poopoli 2026 - Flower Show Tickets",
     description: "Book tickets for Poopoli 2026 Flower Show at Ambalavayal, Wayanad | January 1-15, 2026",
+    generator: "Next.js",
+    applicationName: "Poopoli 2026 Ticketing",
 };
 
 export default function RootLayout({
