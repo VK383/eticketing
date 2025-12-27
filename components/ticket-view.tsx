@@ -97,6 +97,7 @@ export default function TicketView({ id }: TicketProps) {
         ctx.fillStyle = "#ffffff";
         ctx.font = "bold 40px Inter, sans-serif";
         ctx.textAlign = "center";
+        // POOPOLI 2026 - Flower Show (Version 2.0 - Dec 27, 2025)
         ctx.fillText("POOPOLI 2026", canvas.width / 2, 80);
 
         ctx.font = "20px Inter, sans-serif";
